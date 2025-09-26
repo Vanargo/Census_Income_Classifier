@@ -1,5 +1,7 @@
 # Census Income Classifier
 
+[![CI](https://github.com/Vanargo/Census-Income-Classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Vanargo/Census-Income-Classifier/actions/workflows/ci.yml)
+
 ## Overview
 This project predicts whether an individual's annual income exceeds $50K based on census data (UCI Adult dataset).
 The pipeline includes:
