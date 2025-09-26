@@ -1,4 +1,27 @@
-.venv*/
-.ipynb_checkpoints/
-__pychache__/
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual envs
+.venv/
+env/
+venv/
+
+# Data & notebooks artifacts
+data/
+notebooks/
+reports/
+
+# Models & numpy arrays
+*.npy
+*.npz
+*.joblib
+
+# Pytest/cache
+.pytest_cache/
+.mypy_cache/
+
+# OS/editor
 .DS_Store
+.idea/
+.vscode/
