@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+*.ipynb text working-tree-encoding=UTF-8
+*.csv   text
+*.md    text
+*.yml   text
+*.yaml  text
+*.py    text
