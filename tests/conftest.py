@@ -1,5 +1,5 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -240,5 +240,6 @@ def model_path() -> pd.DataFrame:
         return mp
 
     pytest.skip(
-        "Model artifact not found - provide tests/fixtures/micro_model.joblib or build real artifacts."
+        "Model artifact not found - provide tests/fixtures/micro_model.joblib "
+        "or build real artifacts."
     )

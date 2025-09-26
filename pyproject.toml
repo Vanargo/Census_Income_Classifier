@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 100
-target-version = ["py310", "py311"]
+target-version = ["py310"]
 exclude = '''
 (
   ^/.git
@@ -16,23 +16,15 @@ exclude = '''
 '''
 
 [tool.ruff]
-# Общие настройки ruff (не правила линтера) #
-target-version = "py311"
 line-length = 100
-extend-exclude = [
-  ".git", ".venv", "venv", "env", ".mypy_cache", ".pytest_cache",
-  "data", "reports", "notebooks"
-]
+target-version = "py310"
 
 [tool.ruff.lint]
-# <-- НОВЫЙ раздел для правил линтера --> #
-select = ["E", "F", "I", "UP", "B"]
-ignore = [
-  "E203", # конфликтует с black по срезам/двоеточиям
-  "E501", # длину строк контролирует black
-]
+# what to check
+select = ["E", "F", "I", "B", "UP"]
+# nothing ignored right now
+ignore = []
 
 [tool.ruff.lint.isort]
-combine-as-imports = true
+# make import sorter aware of our package
 known-first-party = ["src"]
-force-sort-within-sections = true

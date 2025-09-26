@@ -1,11 +1,11 @@
 import argparse
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from joblib import load
 import numpy as np
 import pandas as pd
+from joblib import load
 
 
 def _is_pipeline(obj) -> bool:

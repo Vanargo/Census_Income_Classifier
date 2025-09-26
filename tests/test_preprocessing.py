@@ -1,7 +1,7 @@
-from joblib import load
 import numpy as np
 import pytest
 import scipy.sparse as sp
+from joblib import load
 
 
 def _get_preproc_from_model(model):

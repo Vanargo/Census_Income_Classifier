@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from joblib import dump
 import pandas as pd
+from joblib import dump
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
