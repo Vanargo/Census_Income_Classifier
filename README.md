@@ -13,23 +13,50 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
 ---
 
 ## Project Structure
-- data/ - Raw, interim, and processed datasets
-    - raw/ - Original UCI Adult dataset files
-    - processed/ - Cleaned & feature-engineered versions
-- notebooks/ - Jupyter notebooks with full workflow
+- data/
+    - raw/ # Исходные данные (Adult dataset)
+    - processed/ # Обработанные данные (train/test splits и пр.)
+    - artifacts/ # Модели и артефакты обучения/тестирования
+        - lgb_best.joblib # (estimator) лучший LGBM без препроцессинга
+        - X_test_enc.npz # закодированный тест (для голых моделей)
+        - fairness_thresold_scan.csv # экспорт скан-ия порогов (fariness)
+    - models/
+    - model_best.joblib # (pipeline) лучший пайплайн=препроцессинг+модель
+- notebooks/
     - 01_data_loading_and_eda.ipynb
     - 02_modeling.ipynb
     - 03_fairness_and_explainability.ipynb
-    - artifacts/ - Saved artifacts from trainig/testing
-    - models/ - Serialized trained models
-- reports/ - Figures and plots
-    - figures_03/ - Fairness & explainability plots
-- src/ - Source code
-    - models/infer.py - Inference script (to be explained)
-- models/ - Top-level folder for trained models (if any)
-- requirements.txt - Python dependencies
-- README.md - Project documentation
-- .gitignore - Git ignore file
+    - artifacts/ # Артефакты, сохраненные из ноутбуков
+    - models/
+- src/
+    - models/
+        - infer.py # CLI интерфейса (см. раздел 'How to run unference')
+    - utils.py # вспомогательные функции
+- tests/
+    - conftest.py # фикстуры для unit-тестов
+    - test_infer_cli.py # smoke-тесты CLI
+    - test_infer_func.py # smoke-тесты функций инференса
+    - test_preprocessing.py # smoke-тест препроцессора
+    - fixtures/
+        - minidata.csv
+        - micro_model.joblib
+- reports/
+    - figures_01/ # ключевые графики EDA
+        - eda_correlation_numeric.png
+        - eda_numeric_distributions.png
+    - figures_02/ # ключевые графики моделинга
+        - roc_curve.png
+        - pr_curve.png
+        - calibration_curve.png
+        - confusion_matrix.png
+        - feature_importance_lgbm.png
+        - feature_importance_xgb_gain.png
+    - figures_03/ # fairness/explainability
+        - Pareto_f1_vs_dp.png
+- requirements.txt
+- requirements-dev.txt
+- environments.yml
+- README.md
 
 ---
 
@@ -75,14 +102,26 @@ Notebook: `03_fairness_and_explainability.ipynb`
 ---
 
 ## Installation
+### Option 1 (рекомендуется, conda):
 ```bash
-git clone <repo-url>
-cd '1. Census Income Classifier'
-python -m venv venv
-# Activate:
-# Linux/Mac: source venv/bin/activate
-# Windows: venv/Scripts/activate
+conda env create -f environment.yml
+conda activate census_ds2
+```
+### Option 2 (через pip)
+```bash
+python - <<'PY'
+from pathlib import Path
+p = Path('requirements.txt')
+data = p.read_text(encoding='utf-16')
+p.write_text(data, encoding='utf-8')
+print('requirements.txt переписан в UTF-8')
+PY
+
 pip install -r requirements.txt
+```
+# для запуска unit-тестов установите dev-зависимости:
+```bash
+conda install --file requirements-dev.txt -c conda-forge
 ```
 
 ## Results
@@ -101,18 +140,30 @@ Example: ![Pareto plot](reports/figures_03/Pareto_f1_vs_dp.png)
 ### Explainability
 SHAP summary plots hightlight top features (education, occupation, hours-per-week, age).
 
+## Testing
+
+Unit-тесты реализованы в папке `tests/`. Они включают:
+- smoke-тесты CLI (`test_infer.py`);
+- smoke-тесты функций инференса (`test_infer_func.py`);
+- smoke-тест препроцессора (`test_preprocessing.py`).
+
+Запуск всех тестов:
+```bash
+pytest -q
+```
+
 ## Limitations
 - sensitive attributes analyzed: sex, age, education only;
 - some metric inconsistencies detected (accuracy = precision in some rows);
 - fairness post-processing may reduce overall accuracy;
-- inference script is currently a stub and must be extended.
+- inference script реализован как рабочий CLI (`src/models/infer.py`), поддерживает опции `--proba`, `--threshold`, `also-label`.
 
 ## Roadmap
 - [ ] Fix metric bug in results table;
 - [ ] fill `requirements.txt` with pinned versions;
-- [ ] expand `infer.py` into a full CLI tool;
-- [ ] save EDA and modeling plots into `reports/figures_01/` and `reports/figures_02/`;
-- [ ] add unit tests for preprocessing and inference;
+- [x] expand `infer.py` into a full CLI tool;
+- [x] save EDA and modeling plots into `reports/figures_01/` and `reports/figures_02/`;
+- [x] add unit tests for preprocessing and inference;
 - [ ] export HTML reports of notebooks.
 
 ## Usage
@@ -126,5 +177,46 @@ Execute Jupyter notebooks in sequence:
 ### Inference (after expanding `infer.py`)
 Run predictions on new data:
 ```bash
-python src/models/infer.py --input data/raw/sample.csv --output predictions.csv
+# Инференс из уже закодированных признаков (X_test_enc.npz) и обученной модели:
+python - <<'PY'
+import numpy as np
+import scipy.sparse as sp
+from joblib import load
+from pathlib import Path
+
+model_p = Path("data/artifacts/lgb_best.joblib")
+x_enc_p = Path("data/artifacts/X_test_enc.npz")
+out_p = Path("predictions.csv")
+
+X = sp.load_npz(x_enc_p)
+clf = load(model_p)
+proba = clf.predict_proba(X)[:, 1]
+np.savetxt(out_p, proba, delimiter=",", header="proba", comments="")
+print(f"Saved: {out_p.resolve()}")
+PY
+```
+
+## How to run inference
+
+After training, the best pipeline is exported to `data/models/model_best.joblib`.
+You can run inference either with a pipeline (`model_best.joblib`) or with a bare estimator (e.g. `lgb_best.joblib`).
+
+### Example A: Pipeline (preferred)
+Use raw CSV with original features:
+```bash
+python -m src.models.inder \
+    --model data/models/model_best.joblib \
+    --input data/processed/adult_eda.csv \
+    --output predictions/preds_pipeline.csv \
+    --proba --also-label --threshold 0.5
+```
+
+### Example B: Bare estimator
+Use encoded test set (.npz):
+```bash
+pythion -m src.models.infer \
+    --model data/artifacts/lgb_best.joblib \
+    --input data/artifacts/X_test_enc.npz \
+    --output predictions/preds_lgbm.csv \
+    --proba --also-label --threshold 0.5
 ```

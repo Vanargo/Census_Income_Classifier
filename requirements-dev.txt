@@ -1,0 +1,8 @@
+pytest
+joblib
+scikit-learn
+pandas
+numpy
+scipy
+ruff==0.6.9
+black==24.8.0
