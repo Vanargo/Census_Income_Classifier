@@ -243,3 +243,27 @@ pythion -m src.models.infer \
     --output predictions/preds_lgbm.csv \
     --proba --also-label --threshold 0.5
 ```
+
+## Artifacts & Releases
+
+Тяжёлые артефакты **не хранятся** в Git-истории. Они исключены правилами `.gitignore`:
+- `data/artifacts/**`, `data/models/**`
+- `reports/**/*.html`, `reports/figures_*/**`
+- бинарные массивы в `data/**/*.npy`, `data/**/*.npz`
+- промежуточные `data/processed/*_eda.csv`
+
+Актуальные выкладки доступны на странице Releases репозитория.  
+➡️ **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
+
+### Что есть в Releases
+- миграционный пакет с моделями и артефактами (`models/*.joblib`, `artifacts/X_test_enc.npy`)
+- HTML-репорты ноутбуков
+
+### Как воспроизвести локально без артефактов
+1. Подготовить окружение и данные (см. раздел “Installation & Reproducibility”).  
+2. Запустить ноутбуки по порядку:
+   - `01_data_loading_and_eda.ipynb` - подготовка данных;
+   - `02_modeling.ipynb` - обучение и сохранение моделей/артефактов в `data/models` и `data/artifacts`;
+   - `03_fairness_and_explainability.ipynb` - генерация отчётов и графиков в `reports/`.
+
+> Примечание: сырьевые файлы набора Adult (UCI) не коммитятся. Положите их в `data/raw/` или используйте шаг загрузки в `01_*` ноутбуке.
