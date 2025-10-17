@@ -1,27 +1,56 @@
-# Python cache
+# --- Python cache --- #
 __pycache__/
 *.py[cod]
+*.pyo
 
-# Virtual envs
+# --- Jupyter --- #
+.ipynb_checkpoints/
+
+# --- Virtual envs --- #
 .venv/
 env/
 venv/
 
-# Data & notebooks artifacts
-data/
-notebooks/
-reports/
+# --- Data: raw & intermediates --- #
+data/raw/
+data/tmp/
+data/interim/
+data/processed/*.parquet
+data/processed/*.feather
+data/processed/*.arrow
+data/processed/*_eda.csv
 
-# Models & numpy arrays
-*.npy
-*.npz
+# --- Artifacts & models (store in Releases, not in git) --- #
+data/artifacts/**
+data/models/**
+# allowlist: keep only lightweight summary table #
+!data/models/results_summary.csv
+
+# --- Numpy & binary blobs in data/* --- #
+data/**/*.npy
+data/**/*.npz
+
+# --- Reports: heavy HTML and figures --- #
+reports/**/*.html
+reports/figures_01/**
+reports/figures_02/**
+reports/figures_03/**
+
+# --- Notebook artifacts --- #
+notebooks/data/**/artifacts/
+notebooks/data/**/models/
+
+# --- Models by extension (extra safety) --- #
 *.joblib
+*.pkl
 
-# Pytest/cache
+# --- Pytest/cache --- #
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 
-# OS/editor
+# --- OS/editor --- #
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/

@@ -12,7 +12,7 @@ The pipeline includes:
 
 The goal is to demonstrate a full Data Science workflow: from raw dataset to deployed model artifacts, with careful attention to fairness and transparency.
 
----
+
 
 ## Project Structure
 - data/
@@ -60,10 +60,11 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
 - environments.yml
 - README.md
 
----
-
 ## Dataset
-- **Source:** [UCI ML Repository - Adult dataset](https://archive.ics.uci.edu/ml/datasets/adult)
+- **Source:** [UCI Machine Learning Repository - Adult (Census Income) dataset](https://archive.ics.uci.edu/dataset/2/adult)
+- **Authors:** Barry Becker, Ronny Kohavi
+- **License:** CC BY 4.0
+- **DOI:** 10.24432/C5XW20
 - **Files used:**
     - `data/raw/adult.data` (training data, ~32K rows)
     - `data/raw/adult.test` (test data, ~16K rows)
@@ -72,7 +73,7 @@ The dataset contains demographic and employment-related features, such as age, e
 - '<=50K'
 - '>50K'
 
----
+If you use this dataset, please cite the UCI repository page above.
 
 ## Pipeline
 
@@ -136,8 +137,28 @@ conda install --file requirements-dev.txt -c conda-forge
 | LogReg    | 0.91  | 0.67  | 0.74      | 0.61   | 0.74     |
 
 ### Fairness
-Pareto curve shows trade-off between F1 and Demographic Parity;
-Example: ![Pareto plot](reports/figures_03/Pareto_f1_vs_dp.png)
+Мы анализируем поведение модели для чувствительных групп (например, `sex`, `race`, `age_group`). Ниже 2-3 ключевых графика, которые показывают влияние выбора порога классификации на качество и разницу показателей между группами.
+
+**Ключевые визуализации:**
+- **Pareto F1-DP:** компромисс между качеством (F1) и разницей по демографическому паритету (DP).
+    ![Pareto F1-DP](data/reports/figures_03/Pareto_f1_vs_dp.png)
+- **Accuracy/F1 vs threshold:** как глобальные метрики меняются при варьировании порога.
+    ![Accuracy/F1 vs threshold](data/reports/figures_03/accuracy_f1_vs_threshold.png)
+- **DP vs threshold:** как меняется разница долей положительных предсказаний между группами при изменении порога.
+    ![DP vs threshold](data/reports/figures_03/dp_vs_threshold.png)
+
+*Дополнительно:*
+- **EOD vs threshold:** поведение Equal Opportunity Difference при варьировании порога.
+    ![EOD vs threshold](data/reports/figures_03/eod_vs_threshold.png)
+- **Calibration by group:** надежность вероятностей по чувствительным группам (пример: `sex`).
+    ![Calibration by sex](data/reports/figures_03/calibration_sex.png)
+
+**Краткий анализ.**
+1. График Pareto F1-DP показывает, что при повышении F1 Score модель теряет баланс по Demographic Parity: улучшение точности сопровождается ростом разницы в положительных предсказаниях между группами. Это отражает неизбежный компромисс между общей производительностью и справедливостью классификатора.
+2. Кривые DP vs threshold и EOD vs threshold демонстрируют, что выбор порога сильно влияет на разрыв между группами: при низких порогах (t < 0.4) модель переоценивает вероятность положительного исхода у доминирующей группы, а при высоких (t > 0.6) - занижает ее у менее представленных. Оптимальная зона находится около t ~ 0.5, где одновременно удерживаются приемлемые значения F1 и снижается EOD.
+3. Совокупно эти визуализации подтверждают, что fairness-коррекция (например, подбор порога или reweighting) может существенно улучшить баланс метрик между чувствительными группами без серьезного ущерба по качеству модели.
+
+Полный набор рисунков и CSV доступен в папке [`data/reports/figures_03/`](data/reports/figures_03/).
 
 ### Explainability
 SHAP summary plots hightlight top features (education, occupation, hours-per-week, age).

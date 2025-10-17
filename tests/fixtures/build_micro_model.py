@@ -1,3 +1,6 @@
+# Copyright (c) 2025 Vanargo 
+# Licensed under the MIT License. See LICENSE in the project root.
+
 from pathlib import Path
 
 import pandas as pd

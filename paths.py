@@ -1,3 +1,6 @@
+# Copyright (c) 2025 Vanargo
+# Licensed under the MIT License. See LICENSE in the project root.
+
 from __future__ import annotations
 
 from collections.abc import Iterable
