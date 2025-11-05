@@ -45,6 +45,18 @@ notebooks/predictions/
 !/releases/*/README.md
 !/releases/*/MANIFEST.md
 
+# --- Releases: keed metadata only --- #
+/releases/*/artifacts/
+/releases/*/models/
+/releases/*/figures_*/
+/releases/*/reports_html/
+/releases/*/data_raw/
+/releases/*/predictions
+/releases/*/*.csv
+/releases/*/*.html
+!/releases/*/README.md
+!/releases/*/MANIFEST.md
+
 # --- Models by extension (extra safety) --- #
 *.joblib
 *.pkl
