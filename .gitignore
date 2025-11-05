@@ -32,19 +32,18 @@ data/**/*.npz
 
 # --- Reports: heavy HTML and figures --- #
 reports/**/*.html
-reports/figures_01/**
-reports/figures_02/**
-reports/figures_03/**
-# ignore any future figure subfolders #
-reports/figures_*/
 
 # --- Notebook artifacts & predictions --- #
 notebooks/data/**/artifacts/
 notebooks/data/**/models/
 notebooks/predictions/
 
-# --- Releases (keep local only, upload manually) --- #
-releases/
+# --- Releases: ignore heavy duplicates, keed metadata --- #
+/releases/*/artifacts/
+/releases/*/models/
+/releases/*/figures_*/
+!/releases/*/README.md
+!/releases/*/MANIFEST.md
 
 # --- Models by extension (extra safety) --- #
 *.joblib
