@@ -12,7 +12,7 @@ seaborn==0.13.2
 
 # --- Modeling --- #
 lightgbm==4.6.0
-xgboost==3.0.1
+xgboost==1.7.6
 shap==0.48.0
 fairlearn==0.12.0
 

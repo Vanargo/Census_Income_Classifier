@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Vanargo 
+# Copyright (c) 2025 Vanargo
 # Licensed under the MIT License. See LICENSE in the project root.
 
 import json

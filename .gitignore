@@ -60,3 +60,7 @@ releases/
 Thumbs.db
 .idea/
 .vscode/
+predictions/
+
+# --- Prevent reintroducing duplicated audit files at repo root --- #
+/audit_Census_Income_Classifier_*.md
