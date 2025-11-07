@@ -41,6 +41,14 @@ reports/**/*.html
 /data/reports/**
 /data/models/*.csv
 
+# --- Artifacts under data/ --- #
+data/artifacts/**
+
+# --- Figures --- #
+reports/figures_01/**
+reports/figures_02/**
+reports/figures_03/**
+
 # --- Notebook artifacts & predictions --- #
 notebooks/data/**/artifacts/
 notebooks/data/**/models/
