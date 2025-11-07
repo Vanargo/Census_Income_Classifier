@@ -10,6 +10,14 @@ authors = [{ name = "Ivan Polishchuk" }]
 Homepage = "https://github.com/Vanargo/Census_Income_Classifier"
 Source = "https://github.com/Vanargo/Census_Income_Classifier"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]
+namespaces = false
+
 [tool.black]
 line-length = 100
 target-version = ["py310"]

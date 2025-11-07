@@ -66,7 +66,7 @@ def _load_model(model_path: Path):
                     "clf.joblib",
                     "estimator.joblib",
                 ]
-                candidates += [q.name for q in sorted(p.gloab("*.joblib"))]
+                candidates += [q.name for q in sorted(p.glob("*.joblib"))]
                 for name in candidates:
                     cand = p / name
                     if cand.exists():

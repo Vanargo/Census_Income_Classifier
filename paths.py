@@ -15,40 +15,33 @@ def _has_marker(p: Path, markers: Iterable[str]) -> bool:
 
 def get_project_root(markers: Iterable[str] = _MARKERS) -> Path:
     """
-    Надежно находит корень проекта как родительскую папку,
-    в которой есть любой из маркеров (_MARKERS).
-    Работает как в .py, так и в Jupyter (где __file__ не определен).
+    Идем вверх от текущего файла/каталога,
+    пока не найдем один из маркеров.
     """
-    # попытка через __file__ #
-    try:
-        here = Path(__file__).resolve().parent
-        for p in [here, *here.parents]:
-            if _has_marker(p, markers):
-                return p
-    except NameError:
-        pass
-
-    # fallback: старт от текущего рабочего каталога #
-    cwd = Path.cwd().resolve()
-    for p in [cwd, *cwd.parents]:
-        if _has_marker(p, markers):
-            return p
-
-    return cwd
+    p = Path(__file__).resolve()
+    for parent in [p] + list(p.parents):
+        # если модуль помещен в src/, выходим на его корень #
+        base = parent if parent.is_dir() else parent.parent
+        if _has_marker(base, markers):
+            return base
+    # fallback: текущая рабочая директория #
+    return Path.cwd()
 
 
-# подготовка удобных алиасов директорий проекта #
+# абсолютные пути от ROOT #
 ROOT = get_project_root()
+
+# данные #
 DATA_DIR = ROOT / "data"
 RAW_DIR = DATA_DIR / "raw"
 INT_DIR = DATA_DIR / "interim"
 PROC_DIR = DATA_DIR / "processed"
-NB_DIR = DATA_DIR / "notebooks"
-SRC_DIR = DATA_DIR / "src"
-ART_DIR = DATA_DIR / "artifacts"
-REPORTS_DIR = DATA_DIR / "reports"
-MODELS_DIR = DATA_DIR / "models"
 
-# убеждаемся, что ключевые папки существуют #
-for d in (DATA_DIR, RAW_DIR, INT_DIR, PROC_DIR, ART_DIR, REPORTS_DIR, MODELS_DIR):
-    d.mkdir(parents=True, exist_ok=True)
+# исходики и ноутбуки хранятся в корне проекта #
+SRC_DIR = ROOT / "src"
+NB_DIR = ROOT / "notebooks"
+
+# модели, отчеты и артефакты - в корне проекта #
+MODELS_DIR = ROOT / "models"
+REPORTS_DIR = ROOT / "reports"
+ART_DIR = ROOT / "artifacts"
