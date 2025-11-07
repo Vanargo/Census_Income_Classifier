@@ -1,10 +1,14 @@
 [project]
-name = 'census-income-classifier'
-version = '0.0.0'
-description = 'ML pipeline for UCI Adult (Census Income)'
-readme = 'README.md'
-license = { text = 'MIT' }
-requires-python = '>3.10'
+name = "census_income_classifier"
+version = "0.1.0"
+description = "Reproducible ML pipeline for UCI Adult (Census Income) with fairness and explainability analysis."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Ivan Polischuk" }]
+[project.urls]
+Homepage = "https://github.com/Vanargo/Census_Income_Classifier"
+Source = "https://github.com/Vanargo/Census_Income_Classifier"
 
 [tool.black]
 line-length = 100
@@ -17,6 +21,7 @@ exclude = '''
 | ^/env
 | ^/.mypy_cache
 | ^/.pytest_cache
+| ^/.ruff_cache
 | ^/data
 | ^/reports
 | ^/notebooks
@@ -28,11 +33,17 @@ line-length = 100
 target-version = "py310"
 
 [tool.ruff.lint]
-# what to check
 select = ["E", "F", "I", "B", "UP"]
-# nothing ignored right now
-ignore = []
+ignore = ["E501"]
 
 [tool.ruff.lint.isort]
-# make import sorter aware of our package
 known-first-party = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
