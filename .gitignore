@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 
 # --- Jupyter --- #
-.ipynb_checkpoints/
+**/.ipynb_checkpoints/
 
 # --- Virtual envs --- #
 .venv/
@@ -20,17 +20,19 @@ data/processed/*.feather
 data/processed/*.arrow
 data/processed/*_eda.csv
 
-# --- Artifacts & models (store in Releases, not in git) --- #
-data/artifacts/**
-data/models/**
-# allowlist: keep only lightweight summary table #
-!data/models/results_summary.csv
+# --- Artifacts & models (moved to repo root; store via Releases) --- #
+artifacts/**
+models/**
+# allowlist: keep only lightweight metadata only #
+!artifacts/README.md
+!models/README.md
+!models/results_summary.csv
 
 # --- Numpy & binary blobs in data/* --- #
 data/**/*.npy
 data/**/*.npz
 
-# --- Reports: heavy HTML and figures --- #
+# --- Reports: heavy HTML --- #
 reports/**/*.html
 # block duplicates living under data #
 /data/reports/**
@@ -40,15 +42,9 @@ reports/**/*.html
 notebooks/data/**/artifacts/
 notebooks/data/**/models/
 notebooks/predictions/
+predictions/
 
-# --- Releases: ignore heavy duplicates, keed metadata --- #
-/releases/*/artifacts/
-/releases/*/models/
-/releases/*/figures_*/
-!/releases/*/README.md
-!/releases/*/MANIFEST.md
-
-# --- Releases: keed metadata only --- #
+# --- Releases: ignore heavy payloads, keed metadata --- #
 /releases/*/artifacts/
 /releases/*/models/
 /releases/*/figures_*/
@@ -63,6 +59,10 @@ notebooks/predictions/
 # --- Models by extension (extra safety) --- #
 *.joblib
 *.pkl
+# allow fixtures for tests (small) #
+/tests/fixtures/*.joblib -negate
+!tests/fixtures/*.joblib
+!tests/fixtures/*.pkl
 
 # --- Pytest/cache --- #
 .pytest_cache/
@@ -72,9 +72,8 @@ notebooks/predictions/
 # --- OS/editor --- #
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
-predictions/
+.idea
+.vscode
 
 # --- Prevent reintroducing duplicated audit files at repo root --- #
 /audit_Census_Income_Classifier_*.md
