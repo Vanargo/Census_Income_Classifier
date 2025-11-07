@@ -60,7 +60,6 @@ predictions/
 *.joblib
 *.pkl
 # allow fixtures for tests (small) #
-/tests/fixtures/*.joblib -negate
 !tests/fixtures/*.joblib
 !tests/fixtures/*.pkl
 

@@ -126,8 +126,12 @@ black .
 
 ### 3. Tests
 ```powershell
+# опционально: собрать микромодель для смоук-тестов CLI/инференса
+python tests/fixtures/build_micro_model.py
+# запустить тесты
 pytest -q
-# smoke-тесты инференеса пропускаются, если не предоставлен артефакт `tests/fixtures/micro_model.joblib` или не собрана реальная модель.
+# smoke-тесты инференса пропускаются, если не предоставлен артефакт
+# `tests/fixtures/micro_model.joblib` или не собрана реальная модель (`models/model_best.joblib`).
 ```
 
 ### 4. Run notebooks
@@ -244,18 +248,20 @@ PY
 
 ## How to run inference
 
-After training, the best pipeline is exported to `data/models/model_best.joblib`.
-You can run inference either with a pipeline (`model_best.joblib`) or with a bare estimator (e.g. `lgb_best.joblib`).
+After training, the best pipeline is exported to `models/model_best.joblib`.
+Use the pipeline artifact for inference on raw CSV (preferred).
 
-### Example A: Pipeline (preferred)
+### Example: Pipeline
 Use raw CSV with original features:
 ```bash
-python -m src.models.inder \
-    --model data/models/model_best.joblib \
-    --input data/processed/adult_eda.csv \
-    --output predictions/preds_pipeline.csv \
+python -m src.models.infer ^
+    --model models/model_best.joblib ^
+    --input data/processed/adult_eda.csv ^
+    --output predictions/preds_pipeline.csv ^
     --proba --also-label --threshold 0.5
 ```
+Note: Bare estimators without a bundled preprocessor are not supported by the CLI.
+Use a Pipeline artifact (`model_best.joblib`).
 
 ### Example B: Bare estimator
 Use encoded test set (.npz):
