@@ -22,7 +22,7 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
     - artifacts/ # Модели и артефакты обучения/тестирования
         - lgb_best.joblib # (estimator) лучший LGBM без препроцессинга
         - X_test_enc.npz # закодированный тест (для голых моделей)
-        - fairness_thresold_scan.csv # экспорт скан-ия порогов (fariness)
+        - fairness_threshold_scan.csv # экспорт скан-ия порогов (fairness)
     - models/
     - model_best.joblib # (pipeline) лучший пайплайн=препроцессинг+модель
 - notebooks/
@@ -33,8 +33,7 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
     - models/
 - src/
     - models/
-        - infer.py # CLI интерфейса (см. раздел 'How to run unference')
-    - utils.py # вспомогательные функции
+        - infer.py # CLI интерфейса (см. раздел 'How to run inference')
 - tests/
     - conftest.py # фикстуры для unit-тестов
     - test_infer_cli.py # smoke-тесты CLI
