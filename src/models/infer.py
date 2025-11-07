@@ -36,14 +36,14 @@ def _load_model(model_path: Path):
         """
         Если x - строка/путь/директория - попытка распаковать:
         - если это файл - joblib.load;
-        - если это директория - поиск типовых имен .jolib.
+        - если это директория - поиск типовых имен .joblib.
         Иначе - вернуть как есть.
         """
         if depth > 3:
             # защита от циклов
             return None
 
-        if isinstance(x, str | Path):
+        if isinstance(x, (str, Path)):
             p = Path(x)
             if not p.is_absolute():
                 p = base_dir / p
@@ -141,7 +141,7 @@ def _load_model(model_path: Path):
                 "pipeline_path",
                 "model_path",
                 "pipe_path",
-                "estamator_path",
+                "estimator_path",
                 "path",
                 "artifact",
                 "artifact_path",
@@ -320,7 +320,7 @@ def main():
             )
 
         if in_path.suffix.lower() == ".json":
-            df = pd.read_csv(in_path)
+            df = pd.read_json(in_path)
         else:
             # пустой файл -> pandas поднимает ошибку #
             df = pd.read_csv(in_path)
