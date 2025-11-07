@@ -20,6 +20,9 @@ data/processed/*.feather
 data/processed/*.arrow
 data/processed/*_eda.csv
 
+# --- Keep empty dirs --- #
+!**/.gitkeep
+
 # --- Artifacts & models (moved to repo root; store via Releases) --- #
 artifacts/**
 models/**
@@ -81,3 +84,6 @@ Thumbs.db
 build/
 dist/
 
+
+# keep empty dirs
+!**/.gitkeep
