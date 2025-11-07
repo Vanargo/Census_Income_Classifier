@@ -1,6 +1,8 @@
 # Census Income Classifier
 
-[![CI](https://github.com/Vanargo/Census-Income-Classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Vanargo/Census-Income-Classifier/actions/workflows/ci.yml)
+[![CI](https://github.com/Vanargo/Census_Income_Classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Vanargo/Census_Income_Classifier/actions/workflows/ci.yml)
+[-> Changelog](./CHANGELOG.md)
+
 
 ## Overview
 This project predicts whether an individual's annual income exceeds $50K based on census data (UCI Adult dataset).
@@ -11,7 +13,6 @@ The pipeline includes:
 - model explainability with SHAP.
 
 The goal is to demonstrate a full Data Science workflow: from raw dataset to deployed model artifacts, with careful attention to fairness and transparency.
-
 
 
 ## Project Structure
@@ -60,6 +61,7 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
 - environments.yml
 - README.md
 
+
 ## Dataset
 - **Source:** [UCI Machine Learning Repository - Adult (Census Income) dataset](https://archive.ics.uci.edu/dataset/2/adult)
 - **Authors:** Barry Becker, Ronny Kohavi
@@ -74,6 +76,7 @@ The dataset contains demographic and employment-related features, such as age, e
 - '>50K'
 
 If you use this dataset, please cite the UCI repository page above.
+
 
 ## Pipeline
 
@@ -102,30 +105,44 @@ Notebook: `03_fairness_and_explainability.ipynb`
 - applies 'ThresholdOptimizer' for post-processing fairness mitigation;
 - explains predictions using SHAP (global and local).
 
----
 
-## Installation
-### Option 1 (рекомендуется, conda):
-```bash
-conda env create -f environment.yml
+## Installation & Reproducibility
+
+### 1. Create environment
+```powershell
+# conda
+conda create -n census_ds2 python=3.10 -y
 conda activate census_ds2
-```
-### Option 2 (через pip)
-```bash
-python - <<'PY'
-from pathlib import Path
-p = Path('requirements.txt')
-data = p.read_text(encoding='utf-16')
-p.write_text(data, encoding='utf-8')
-print('requirements.txt переписан в UTF-8')
-PY
-
 pip install -r requirements.txt
+# опционально: pre-commit для локальных проверок
+pre-commit install
 ```
-# для запуска unit-тестов установите dev-зависимости:
-```bash
-conda install --file requirements-dev.txt -c conda-forge
+### 2. Code quality
+```powershell
+ruff check . --fix
+ruff format .
+black .
 ```
+
+### 3. Tests
+```powershell
+pytest -q
+# smoke-тесты инференеса пропускаются, если не предоставлен артефакт `tests/fixtures/micro_model.joblib` или не собрана реальная модель.
+```
+
+### 4. Run notebooks
+Выполните по порядку:
+1. `notebooks/01_data_loading_and_eda.ipynb`.
+2. `notebooks/02_modeling.ipynb` (сохраняет модель в `models/` и артефакты в `artifacts/`).
+3. `notebooks/03_fairness_and_explainability.ipynb` (выводы и графики в `reports/`).
+
+### 5. Paths
+Проект использует модуль paths.py с абсолютными путями от `ROOT`:
+- данные: `data/{raw,interim,processed}`;
+- программный код и ноутбуки: `src/`, `notebooks/`;
+- модели и артефакты: `models/`, `artifacts/`;
+- отчеты: `reports/`.
+
 
 ## Results
 ### Model Performance
@@ -163,6 +180,7 @@ conda install --file requirements-dev.txt -c conda-forge
 ### Explainability
 SHAP summary plots hightlight top features (education, occupation, hours-per-week, age).
 
+
 ## Testing
 
 Unit-тесты реализованы в папке `tests/`. Они включают:
@@ -175,11 +193,13 @@ Unit-тесты реализованы в папке `tests/`. Они включ
 pytest -q
 ```
 
+
 ## Limitations
 - sensitive attributes analyzed: sex, age, education only;
 - some metric inconsistencies detected (accuracy = precision in some rows);
 - fairness post-processing may reduce overall accuracy;
 - inference script реализован как рабочий CLI (`src/models/infer.py`), поддерживает опции `--proba`, `--threshold`, `also-label`.
+
 
 ## Roadmap
 - [ ] Fix metric bug in results table;
@@ -188,6 +208,7 @@ pytest -q
 - [x] save EDA and modeling plots into `reports/figures_01/` and `reports/figures_02/`;
 - [x] add unit tests for preprocessing and inference;
 - [ ] export HTML reports of notebooks.
+
 
 ## Usage
 
@@ -220,6 +241,7 @@ print(f"Saved: {out_p.resolve()}")
 PY
 ```
 
+
 ## How to run inference
 
 After training, the best pipeline is exported to `data/models/model_best.joblib`.
@@ -245,27 +267,30 @@ pythion -m src.models.infer \
     --proba --also-label --threshold 0.5
 ```
 
+
 ## Artifacts & Releases
 
-Тяжёлые артефакты **не хранятся** в Git-истории. Они исключены правилами `.gitignore`:
+Тяжелые артефакты не хранятся в Git-истории. Они исключены правилами `.gitignore`:
 - `data/artifacts/**`, `data/models/**`
 - `reports/**/*.html`, `reports/figures_*/**`
 - бинарные массивы в `data/**/*.npy`, `data/**/*.npz`
 - промежуточные `data/processed/*_eda.csv`
 
 Актуальные выкладки доступны на странице Releases репозитория.  
-➡️ **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
+-> **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
 
 ### Что есть в Releases
-- миграционный пакет с моделями и артефактами (`models/*.joblib`, `artifacts/X_test_enc.npy`)
-- HTML-репорты ноутбуков
+- пакеты с готовыми артефактами инференса:
+    - модели: `models/*.joblib`;
+    - артефакты препроцессинга: `artifacts/*.npy` (например, `X_test_enc.npy`);
+- HTML-отчеты ноутбуков.
 
 ### Как воспроизвести локально без артефактов
-1. Подготовить окружение и данные (см. раздел “Installation & Reproducibility”).  
+1. Подготовить окружение и данные (см. "Installation & Reproducibility").
 2. Запустить ноутбуки по порядку:
    - `01_data_loading_and_eda.ipynb` - подготовка данных;
-   - `02_modeling.ipynb` - обучение и сохранение моделей/артефактов в `data/models` и `data/artifacts`;
-   - `03_fairness_and_explainability.ipynb` - генерация отчётов и графиков в `reports/`.
+   - `02_modeling.ipynb` - обучение и сохранение моделей в `models/` и артефактов в `artifacts/`;
+   - `03_fairness_and_explainability.ipynb` - генерация отчетов и графиков в `reports/`.
 
 > Примечание: сырьевые файлы набора Adult (UCI) не коммитятся. Положите их в `data/raw/` или используйте шаг загрузки в `01_*` ноутбуке.
 
@@ -279,3 +304,9 @@ pythion -m src.models.infer \
 [csv_select_rates]: https://github.com/Vanargo/Census_Income_Classifier/releases/download/taskB-2025-10-24/selection_rates_t_star.csv
 [csv_thr_scan]: https://github.com/Vanargo/Census_Income_Classifier/releases/download/taskB-2025-10-24/fairness_threshold_scan.csv
 [csv_preds]: https://github.com/Vanargo/Census_Income_Classifier/releases/download/taskB-2025-10-24/preds_pipeline.csv
+
+
+## Versioning & Changelog
+
+This project follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
+All notable changes are documented in [`CHANGELOG.md`](./CHANGELOG.md).
