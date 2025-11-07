@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - initial public release `v1.0.0` with reproducible DS pipeline for UCI Adult (Census Income);
 - fairness analysis (selection rates, demographic parity, equalized odds, threshold scan);
 - explainability via SHAP figures and calibration plots;
-- installation & Reproducibilirt section in README.
+- installation & Reproducibility section in README.
 
 ### Changed
 - cleaned and formatted notebooks (`01_data_loading_and_eda.ipynb`, `02_modeling.ipynb`, `03_fairness_and_explainability.ipynb`);
