@@ -17,48 +17,38 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
 
 ## Project Structure
 - data/
-    - raw/ # Исходные данные (Adult dataset)
-    - processed/ # Обработанные данные (train/test splits и пр.)
-    - artifacts/ # Модели и артефакты обучения/тестирования
-        - lgb_best.joblib # (estimator) лучший LGBM без препроцессинга
-        - X_test_enc.npz # закодированный тест (для голых моделей)
-        - fairness_threshold_scan.csv # экспорт скан-ия порогов (fairness)
-    - models/
-    - model_best.joblib # (pipeline) лучший пайплайн=препроцессинг+модель
+    - raw/        # Исходные данные (Adult dataset)
+    - processed/  # Обработанные данные (train/test splits и пр.)
+    - interim/    # подготовленные выборки для EDA и моделинга
 - notebooks/
     - 01_data_loading_and_eda.ipynb
     - 02_modeling.ipynb
     - 03_fairness_and_explainability.ipynb
-    - artifacts/ # Артефакты, сохраненные из ноутбуков
-    - models/
 - src/
     - models/
-        - infer.py # CLI интерфейса (см. раздел 'How to run inference')
+        - infer.py  # CLI интерфейса (см. раздел 'How to run inference')
+        - __init__.py
+    - __init__.py
 - tests/
-    - conftest.py # фикстуры для unit-тестов
-    - test_infer_cli.py # smoke-тесты CLI
-    - test_infer_func.py # smoke-тесты функций инференса
-    - test_preprocessing.py # smoke-тест препроцессора
+    - conftest.py
+    - test_infer_cli.py
+    - test_infer_func.py
+    - test_preprocessing.py
     - fixtures/
         - minidata.csv
         - micro_model.joblib
+- artifacts/  # артефакты обучения/оценки (локально/скачаны из GitHub Releases)
+- models/     # обученные модели (локально/скачаны из GitHub Releases)
 - reports/
     - figures_01/ # ключевые графики EDA
-        - eda_correlation_numeric.png
-        - eda_numeric_distributions.png
     - figures_02/ # ключевые графики моделинга
-        - roc_curve.png
-        - pr_curve.png
-        - calibration_curve.png
-        - confusion_matrix.png
-        - feature_importance_lgbm.png
-        - feature_importance_xgb_gain.png
-    - figures_03/ # fairness/explainability
-        - Pareto_f1_vs_dp.png
+    - figures_03/ # графики fairness/explainability
+- .github/  # CI-конфигурация (GitHub Actions)
 - requirements.txt
 - requirements-dev.txt
-- environments.yml
+- environment.yml
 - README.md
+- CHANGELOG.md
 
 
 ## Dataset
