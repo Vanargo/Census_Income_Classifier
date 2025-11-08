@@ -255,7 +255,7 @@ Use a Pipeline artifact (`model_best.joblib`).
 ### Example B: Bare estimator
 Use encoded test set (.npz):
 ```bash
-pythion -m src.models.infer \
+python -m src.models.infer \
     --model data/artifacts/lgb_best.joblib \  # файл скачан из Releases
     --input data/artifacts/X_test_enc.npz \   # файл скачан из Releases
     --output predictions/preds_lgbm.csv \
@@ -265,11 +265,17 @@ pythion -m src.models.infer \
 
 ## Artifacts & Releases
 
-Тяжелые артефакты не хранятся в Git-истории. Они исключены правилами `.gitignore`:
-- `data/artifacts/**`, `data/models/**`
-- `reports/**/*.html`, `reports/figures_*/**`
-- бинарные массивы в `data/**/*.npy`, `data/**/*.npz`
-- промежуточные `data/processed/*_eda.csv`
+Локально артефакты и модели сохраняются в папках `artifacts/` и `models/`. Тяжелые файлы не коммитятся (см. `.gitignore`), но публикуются вместе с релизами на GitHub в разделе Releases:
+/releases/v1.0.0/
+    - models/
+        - LGBM_best.joblib
+        - XGBoost_ES_best.joblib
+    - artifacts/
+        - X_test_enc.npy
+        - fairness_threshold_scan.csv
+    - reports_html/
+    - MANIFEST.md
+При повторном запуске пайплайна (`02_modeling.ipynb`) артефакты перезаписываются локально; для воспроизводимости рекомендуется использовать версии из релизов.
 
 Актуальные выкладки доступны на странице Releases репозитория.  
 -> **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
