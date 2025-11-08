@@ -43,7 +43,7 @@ def _load_model(model_path: Path):
             # защита от циклов
             return None
 
-        if isinstance(x, (str, Path)):
+        if isinstance(x, str | Path):
             p = Path(x)
             if not p.is_absolute():
                 p = base_dir / p
