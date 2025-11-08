@@ -22,10 +22,10 @@ def _has_predict_proba(model) -> bool:
 
 def _load_model(model_path: Path):
     """
-    Гибкая загрузка артефактов модели.
-    Возвращает пару (model_or_pipe, preproc_or_None), где:
-    - если есть полноценный sklearn Pipeline -> (pipe, None);
-    - если сохранен clf и (опционально) preproc -> (clf, preproc).
+    Flexible model artifact loader.
+    Returns a pair (model_or_pipe, preproc_or_None), where:
+    - if there is a full sklearn Pipeline -> (pipe, None);
+    - if clf and (optionally) preproc are saved -> (clf, preproc).
     """
     if not model_path.exists():
         raise FileNotFoundError(f"Model artifact not found: {model_path}")
@@ -34,13 +34,13 @@ def _load_model(model_path: Path):
 
     def _maybe_load_pointer(x, depth=0):
         """
-        Если x - строка/путь/директория - попытка распаковать:
-        - если это файл - joblib.load;
-        - если это директория - поиск типовых имен .joblib.
-        Иначе - вернуть как есть.
+        If x is a string/path/directory, try to unpack it:
+        - if it is a file -> joblib.load;
+        - if it is a directory -> search for typical .joblib names.
+        Otherwise return as is.
         """
         if depth > 3:
-            # защита от циклов
+            # protection against recursive loops #
             return None
 
         if isinstance(x, str | Path):
@@ -49,14 +49,14 @@ def _load_model(model_path: Path):
                 p = base_dir / p
 
             if p.is_file():
-                # попытка загрузить любой файл
+                # try to load any file #
                 try:
                     return load(p)
                 except Exception:
                     return x
 
             if p.is_dir():
-                # поиск типовых pipeline/моделей
+                # search for tupical pipeline/model files #
                 candidates = [
                     "pipeline.joblib",
                     "model_pipeline.joblib",
@@ -77,22 +77,22 @@ def _load_model(model_path: Path):
         return x
 
     def _extract_from(obj):
-        # pointer - загрузка #
+        # pointer-like object -> try to load #
         obj = _maybe_load_pointer(obj)
 
-        # если sklearn Pipeline #
+        # sklearn Pipeline #
         if _is_pipeline(obj):
             return obj, None
 
-        # если оценщик (есть predict/predict_proba) - без препроцессора #
+        # estimator (has predict/predict_proba) without a preprocessor #
         if hasattr(obj, "predict") or hasattr(obj, "predict_proba"):
             return obj, None
 
-        # контейнер-объект с атрибутами (SimpleNamespace и т.п.) #
+        # container-like object with attributes (SimpleNamespace, etc.) #
         for attr in ("pipe", "pipeline"):
             if hasattr(obj, attr) and _is_pipeline(getattr(obj, attr)):
                 return getattr(obj, attr), None
-        # clf + preproc как атрибуты #
+        # clf + preproc as attributes #
         if hasattr(obj, "__dict__"):
             clf = None
             preproc = None
@@ -113,13 +113,13 @@ def _load_model(model_path: Path):
 
         # dict #
         if isinstance(obj, dict):
-            # попытка найти pipeline
+            # try to find a pipeline
             for k in ("pipe", "pipeline", "model", "estimator"):
                 if k in obj:
                     v = _maybe_load_pointer(obj[k])
                     if _is_pipeline(v):
                         return v, None
-            # попытка найти clf + preproc
+            # try to find clf + preproc
             clf = None
             preproc = None
             for k in ("clf", "classifier", "model", "estimator"):
@@ -148,7 +148,7 @@ def _load_model(model_path: Path):
             )
             container_like_keys = ("artifacts", "models", "paths")
 
-            # прямые путевые ключи
+            # direct path-like keys
             for k in path_like_keys:
                 if k in obj:
                     v = _maybe_load_pointer(obj[k], depth=1)
@@ -157,7 +157,7 @@ def _load_model(model_path: Path):
                         if extracted != (None, None):
                             return extracted
 
-            # вложенные словари с путями
+            # nested dicts with paths
             for ck in container_like_keys:
                 if ck in obj and isinstance(obj[k], dict):
                     for _, vv in obj[ck].items():
@@ -167,21 +167,21 @@ def _load_model(model_path: Path):
                             if extracted != (None, None):
                                 return extracted
 
-            # путевые ключи
+            # path-like keys
             for k in ("pipeline_path", "model_path", "pipe_path", "estimator_path"):
                 if k in obj:
                     v = _maybe_load_pointer(obj[k], depth=1)
                     if v is not None:
                         return _extract_from(v)
 
-        # итерируемые контейнеры: список/кортеж/набор #
+        # iterable containers: list/tuple/set #
         if isinstance(obj, list | tuple | set):
-            # попытка найти pipeline
+            # try to find a pipeline
             for v in obj:
                 v = _maybe_load_pointer(v)
                 if _is_pipeline(v):
                     return v, None
-            # попытка найти clf + preproc
+            # try to find clf + preproc
             clf = None
             preproc = None
             for v in obj:
@@ -197,7 +197,7 @@ def _load_model(model_path: Path):
             if clf is not None:
                 return clf, preproc
 
-        # fallback: по типичным именам рядом с моделью #
+        # fallback: typical file names next to the model #
         for name in (
             "pipeline.joblib",
             "model_pipeline.joblib",
@@ -248,19 +248,19 @@ def run_inference(
     also_label: bool = True,
 ) -> pd.DataFrame:
     """
-    Выполнить инференс по готовому DataFrame с сырыми фичами Adult.
-    Возвращает DataFrame с колонками: ['proba', 'label'] или ['label'].
+    Run inference on a prepared DataFrame with raw Adult features.
+    Returns a DataFrame with columns: ['proba', 'label'] or ['label'].
     """
     model, preproc = _load_model(model_path)
 
-    # если pipeline - просто скормим ему df #
+    # pipeline: just feed df into it #
     if _is_pipeline(model):
         if proba and _has_predict_proba(model):
             preds = model.predict_proba(df)[:, 1]
         else:
             preds = model.predict(df)
     else:
-        # не pipeline: clf (+/- preproc)
+        # not a pipeline: clf (+/- preproc)
         if not hasattr(model, "predict") and not hasattr(model, "predict_proba"):
             raise TypeError("Loaded artifact is not a pipeline and has no predict/predict_proba.")
 
@@ -271,7 +271,7 @@ def run_inference(
         else:
             preds = model.predict(X)
 
-    # сборка выходного DataFrame #
+    # build output DataFrame #
     if proba:
         out = pd.DataFrame({"proba": np.asarray(preds, dtype=float)})
         if also_label:
@@ -322,7 +322,7 @@ def main():
         if in_path.suffix.lower() == ".json":
             df = pd.read_json(in_path)
         else:
-            # пустой файл -> pandas поднимает ошибку #
+            # empty file -> pandas will raise an error #
             df = pd.read_csv(in_path)
         if df is None or df.shape[0] == 0 or df.shape[1] == 0:
             print("[error] Empty input data.", file=sys.stderr)

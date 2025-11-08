@@ -34,7 +34,7 @@ RAW_COLS = [
 
 
 def _micro_raw_df_fallback(n_rows: int = 8) -> pd.DataFrame:
-    # минимальный встроенный датасет Adult-like (8 строк, 14 колонок) #
+    # minimal built-in Adult-like dataset (8 rows, 14 columns) #
     rows = [
         dict(
             age=39,
@@ -174,7 +174,7 @@ def _micro_raw_df_fallback(n_rows: int = 8) -> pd.DataFrame:
         ),
     ]
     df = pd.DataFrame(rows)
-    # нормализация имен #
+    # normalize column names #
     if "education_num" in df.columns and "education-num" not in df.columns:
         df = df.rename(columns={"education_num": "education-num"})
     return df[RAW_COLS]
@@ -183,11 +183,11 @@ def _micro_raw_df_fallback(n_rows: int = 8) -> pd.DataFrame:
 @pytest.fixture(scope="session")
 def small_raw_df() -> pd.DataFrame:
     """
-    8 строк сырых фичей Adult для smoke-тестов препроцессинга/инференса.
-    Приоритет: tests/fixtures/minidata.csv ->
-    data/processed/*.csv -> data/processed/*.parquet -> встроенный DF.
+    8 rows of raw Adult features for preprocessing/infrence smoke tests.
+    Priority: tests/fixtures/minidata.csv ->
+    data/processed/*.csv -> data/processed/*.parquet -> built-in DataFrame.
     """
-    # fixtures CSV (герметично для CI) #
+    # fixtures CSV (self-contained for CI) #
     fx_csv = FIXTURES_DIR / "minidata.csv"
     if fx_csv.exists():
         df = pd.read_csv(fx_csv, sep=None, engine="python")
@@ -200,10 +200,10 @@ def small_raw_df() -> pd.DataFrame:
         elif proj_par.exists():
             df = pd.read_parquet(proj_par)
         else:
-            # встроенный fallback
+            # built-in fallback
             df = _micro_raw_df_fallback()
 
-    # отброс целевой переменной #
+    # drop target variable #
     drop_cols = [c for c in ["income", "income_bin"] if c in df.columns]
     df = df.drop(columns=drop_cols, errors="ignore")
 
@@ -222,11 +222,12 @@ def _find_first(*candidates: Path) -> Path | None:
 @pytest.fixture(scope="session")
 def model_path() -> pd.DataFrame:
     """
-    Возврат пути к pipeline/модели.
-    Приоритет: tests/fixtures/micro_model.joblib ->
+    Return path to the pipeline/model.
+    Priority: tests/fixtures/micro_model.joblib ->
     data/models/model_best.joblib ->
-    notebooks/... и т.д.
-    Если ничего не найдено - помечаем тест как skipped (интеграционные артефакты).
+    notebooks/... etc.
+    If nothing is found,
+    marker the test as skipped (integration artifacts).
     """
     fx = _find_first(FIXTURES_DIR / "micro_model.joblib")
     if fx:

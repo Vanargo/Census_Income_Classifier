@@ -15,7 +15,7 @@ csv = HERE / "minidata.csv"
 
 df = pd.read_csv(csv)
 
-# модель для smoke: hours-per-week >= 40 -> 1, иначе 0 #
+# simple smoke model: hours-per-week >= 40 -> 1, else 0 #
 y = (df["hours-per-week"] >= 40).astype(int)
 
 cat = [

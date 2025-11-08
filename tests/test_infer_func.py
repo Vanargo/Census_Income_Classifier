@@ -15,18 +15,18 @@ def test_run_inference_proba_and_label(small_raw_df, model_path: Path):
         also_label=True,
     )
 
-    # структура #
+    # structure #
     assert set(out.columns) >= {
         "proba",
         "label",
     }, "Must have proba and label when proba+also_label."
     assert len(out) == len(small_raw_df) > 0, "Output rows must match input rows."
 
-    # диапазоны #
+    # ranges #
     assert out["proba"].between(0.0, 1.0).all(), "Probabilities must be in [0, 1]."
     assert out["label"].isin([0, 1]).all(), "Labels must be binary 0/1."
 
-    # NaN контроль #
+    # NaN check #
     assert not out.isna().any().any(), "No NaNs expected in output."
 
 

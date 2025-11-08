@@ -11,7 +11,7 @@ def _get_preproc_from_model(model):
     # sklearn Pipeline #
     if hasattr(model, "named_steps"):
         return model.named_steps.get("preproc") or model.named_steps.get("preprpocessor")
-    # объект-контейнер с атрибутами #
+    # container-like object with attributes #
     for attr in ("preproc", "preprocessor"):
         if hasattr(model, attr):
             return getattr(model, attr)
@@ -26,20 +26,20 @@ def test_preprocessor_smoke(model_path, small_raw_df):
 
     X = preproc.transform(small_raw_df)
 
-    # базовые инварианты #
+    # basic invariants #
     assert X is not None
     assert getattr(X, "shape", None) is not None
     assert X.shape[0] == len(small_raw_df)
     assert X.shape[1] > 0
 
-    # отсутствие NaN #
+    # no NaNs #
     if sp.issparse(X):
         assert not np.isnan(X.data).any()
     else:
         arr = np.asarray(X)
         assert not np.isnan(arr).any()
 
-    # детерминизм #
+    # determinism #
     X2 = preproc.transform(small_raw_df)
     if sp.issparse(X) and sp.issparse(X2):
         assert (X != X2).nnz == 0

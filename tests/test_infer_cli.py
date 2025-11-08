@@ -21,7 +21,7 @@ def test_cli_inference(tmp_path: Path, small_raw_df: pd.DataFrame, model_path: P
     out = tmp_path / "preds.csv"
     small_raw_df.to_csv(inp, index=False)
 
-    # запуск CLI #
+    # run CLI #
     cmd = [
         sys.executable,
         "-m",
@@ -68,7 +68,7 @@ def test_cli_inference_thershold(tmp_path: Path, small_raw_df: pd.DataFrame, mod
 
     d1 = pd.read_csv(out1)
     d2 = pd.read_csv(out2)
-    # при более высоком пороге  обычно <= количество positive #
+    # with a higher threshold, the number of positives is usually <= #
     assert d2["label"].sum() <= d1["label"].sum()
 
 

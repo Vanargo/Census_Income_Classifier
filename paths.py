@@ -15,33 +15,33 @@ def _has_marker(p: Path, markers: Iterable[str]) -> bool:
 
 def get_project_root(markers: Iterable[str] = _MARKERS) -> Path:
     """
-    Идем вверх от текущего файла/каталога,
-    пока не найдем один из маркеров.
+    Walk upwards from the current file/directory
+    until one of the markers is found.
     """
     p = Path(__file__).resolve()
     for parent in [p] + list(p.parents):
-        # если модуль помещен в src/, выходим на его корень #
+        # if the module is placed in src/, go up to its root #
         base = parent if parent.is_dir() else parent.parent
         if _has_marker(base, markers):
             return base
-    # fallback: текущая рабочая директория #
+    # fallback: current working directory #
     return Path.cwd()
 
 
-# абсолютные пути от ROOT #
+# absolute paths from ROOT #
 ROOT = get_project_root()
 
-# данные #
+# data #
 DATA_DIR = ROOT / "data"
 RAW_DIR = DATA_DIR / "raw"
 INT_DIR = DATA_DIR / "interim"
 PROC_DIR = DATA_DIR / "processed"
 
-# исходики и ноутбуки хранятся в корне проекта #
+# source code and notebooks live in the project root #
 SRC_DIR = ROOT / "src"
 NB_DIR = ROOT / "notebooks"
 
-# модели, отчеты и артефакты - в корне проекта #
+# models, reports, and artifacts live in the project root #
 MODELS_DIR = ROOT / "models"
 REPORTS_DIR = ROOT / "reports"
 ART_DIR = ROOT / "artifacts"

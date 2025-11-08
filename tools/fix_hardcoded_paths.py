@@ -33,8 +33,8 @@ def save_ipynb(p: Path, obj: dict):
 
 def replace_common_roots(text: str) -> str:
     """
-    Простая эвристика: известные подпути проекта меняем на Path-выражения.
-    Требует ручной проверки диффа.
+    Simple heuristic: replace known project subpaths with Path expressions.
+    Requires manual diff review.
     """
     replacements = {
         r"[A-Za-z]:\\[^\"\']*?1\. Census Income Classifier_v02\\data\\processed\\": "PROC_DIR / ",
@@ -68,9 +68,10 @@ def process_notebook(nb_path: Path):
         src = "".join(cell.get("source", []))
 
         if is_abs_present(src):
-            # сначала грубая подстановка известных подпапок
+            # first, rough substitution of known subfolders
             new_src = replace_common_roots(src)
-            # рекомендация приводить строковые пути к Path (вручную посмотреть дифф)
+            # recommendation: convert string paths to Path
+            # (inspect diff manually)
             if new_src != src:
                 cell["source"] = new_src
                 changed = True

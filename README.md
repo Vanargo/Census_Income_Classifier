@@ -17,16 +17,16 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
 
 ## Project Structure
 - data/
-    - raw/        # Исходные данные (Adult dataset)
-    - processed/  # Обработанные данные (train/test splits и пр.)
-    - interim/    # подготовленные выборки для EDA и моделинга
+    - raw/        # raw data (Adult dataset)
+    - processed/  # processed data (train/test splits и пр.)
+    - interim/    # prepared datasets for EDA and modeling
 - notebooks/
     - 01_data_loading_and_eda.ipynb
     - 02_modeling.ipynb
     - 03_fairness_and_explainability.ipynb
 - src/
     - models/
-        - infer.py  # CLI интерфейса (см. раздел 'How to run inference')
+        - infer.py  # CLI interface (see section 'How to run inference')
         - __init__.py
     - __init__.py
 - tests/
@@ -37,13 +37,13 @@ The goal is to demonstrate a full Data Science workflow: from raw dataset to dep
     - fixtures/
         - minidata.csv
         - micro_model.joblib
-- artifacts/  # артефакты обучения/оценки (локально/скачаны из GitHub Releases)
-- models/     # обученные модели (локально/скачаны из GitHub Releases)
+- artifacts/  # training/evaluation artifacts (local or downloaded from GitHub Releases)
+- models/     # trained models (local or downloaded from GitHub Releases)
 - reports/
-    - figures_01/ # ключевые графики EDA
-    - figures_02/ # ключевые графики моделинга
-    - figures_03/ # графики fairness/explainability
-- .github/  # CI-конфигурация (GitHub Actions)
+    - figures_01/ # key EDA figures
+    - figures_02/ # key modeling figures
+    - figures_03/ # fairness/explainability figures
+- .github/  # CI configuration (GitHub Actions)
 - requirements.txt
 - requirements-dev.txt
 - environment.yml
@@ -103,7 +103,7 @@ Notebook: `03_fairness_and_explainability.ipynb`
 conda create -n census_ds2 python=3.10 -y
 conda activate census_ds2
 pip install -r requirements.txt
-# опционально: pre-commit для локальных проверок
+# optionally: enable pre-commit for local checks
 pre-commit install
 ```
 ### 2. Code quality
@@ -115,26 +115,26 @@ black .
 
 ### 3. Tests
 ```powershell
-# опционально: собрать микромодель для смоук-тестов CLI/инференса
+# optionally: build a micro model for CLI/inference smoke tests
 python tests/fixtures/build_micro_model.py
-# запустить тесты
+# run all tests
 pytest -q
-# smoke-тесты инференса пропускаются, если не предоставлен артефакт
-# `tests/fixtures/micro_model.joblib` или не собрана реальная модель (`models/model_best.joblib`).
+# smoke-tests for inference are skipped if the artifact
+# `tests/fixtures/micro_model.joblib` is missing or no real model (`models/model_best.joblib`) is built.
 ```
 
 ### 4. Run notebooks
-Выполните по порядку:
+Execute in order:
 1. `notebooks/01_data_loading_and_eda.ipynb`.
-2. `notebooks/02_modeling.ipynb` (сохраняет модель в `models/` и артефакты в `artifacts/`).
-3. `notebooks/03_fairness_and_explainability.ipynb` (выводы и графики в `reports/`).
+2. `notebooks/02_modeling.ipynb` (saves the model to `models/` and artifacts to `artifacts/`).
+3. `notebooks/03_fairness_and_explainability.ipynb` (outputs and figures go to `reports/`).
 
 ### 5. Paths
-Проект использует модуль paths.py с абсолютными путями от `ROOT`:
-- данные: `data/{raw,interim,processed}`;
-- программный код и ноутбуки: `src/`, `notebooks/`;
-- модели и артефакты: `models/`, `artifacts/`;
-- отчеты: `reports/`.
+The project uses the `paths.py` module with absolute paths from `ROOT`:
+- data: `data/{raw,interim,processed}`;
+- source code and notebooks: `src/`, `notebooks/`;
+- models and artifacts: `models/`, `artifacts/`;
+- reports: `reports/`.
 
 
 ## Results
@@ -147,28 +147,29 @@ pytest -q
 | LogReg    | 0.91  | 0.67  | 0.74      | 0.61   | 0.74     |
 
 ### Fairness
-Мы анализируем поведение модели для чувствительных групп (например, `sex`, `race`, `age_group`). Ниже 2-3 ключевых графика, которые показывают влияние выбора порога классификации на качество и разницу показателей между группами.
+We analyze model behavior across sensitive groups (e.g., `sex`, `race`, `age_group`).  
+Below are 2–3 key plots showing how classification threshold choice affects both performance and inter-group disparity.
 
-**Ключевые визуализации:**
-- **Pareto F1-DP:** компромисс между качеством (F1) и разницей по демографическому паритету (DP).
+**Key visualizations:**
+- **Pareto F1-DP:** trade-off between performance (F1) and demographic parity difference (DP).
     ![Pareto F1-DP](img_pareto)
-- **Accuracy/F1 vs threshold:** как глобальные метрики меняются при варьировании порога.
+- **Accuracy/F1 vs threshold:** how global metrics vary with threshold changes.
     ![Accuracy/F1 vs threshold](img_f1_thr)
-- **DP vs threshold:** как меняется разница долей положительных предсказаний между группами при изменении порога.
+- **DP vs threshold:** how the share difference of positive predictions between groups changes with the threshold.
     ![DP vs threshold](img_dp_thr)
 
-*Дополнительно:*
-- **EOD vs threshold:** поведение Equal Opportunity Difference при варьировании порога.
+*Additional:*
+- **EOD vs threshold:** Equal Opportunity Difference behavior under threshold variation.
     ![EOD vs threshold](img_eod_thr)
-- **Calibration by group:** надежность вероятностей по чувствительным группам (пример: `sex`).
+- **Calibration by group:** reliability of predicted probabilities per sensitive group (example: `sex`).
     ![Calibration by sex](img_calib_sex)
 
-**Краткий анализ.**
-1. График Pareto F1-DP показывает, что при повышении F1 Score модель теряет баланс по Demographic Parity: улучшение точности сопровождается ростом разницы в положительных предсказаниях между группами. Это отражает неизбежный компромисс между общей производительностью и справедливостью классификатора.
-2. Кривые DP vs threshold и EOD vs threshold демонстрируют, что выбор порога сильно влияет на разрыв между группами: при низких порогах (t < 0.4) модель переоценивает вероятность положительного исхода у доминирующей группы, а при высоких (t > 0.6) - занижает ее у менее представленных. Оптимальная зона находится около t ~ 0.5, где одновременно удерживаются приемлемые значения F1 и снижается EOD.
-3. Совокупно эти визуализации подтверждают, что fairness-коррекция (например, подбор порога или reweighting) может существенно улучшить баланс метрик между чувствительными группами без серьезного ущерба по качеству модели.
+**Brief analysis.**
+1. The Pareto F1–DP plot shows that as F1 increases, the model loses demographic balance: higher accuracy comes with a greater gap in positive prediction rates between groups. This illustrates the inherent trade-off between model performance and fairness.
+2. The DP vs threshold and EOD vs threshold curves show that threshold choice strongly influences group disparity: at low thresholds (t < 0.4), the model overpredicts positives for the dominant group; at high thresholds (t > 0.6), it underpredicts for underrepresented groups. The optimal zone is around t ≈ 0.5, where both F1 and EOD remain acceptable.
+3. Together, these plots confirm that fairness correction (e.g., threshold tuning or reweighting) can substantially improve metric balance across sensitive groups without significant performance degradation.
 
-Полный набор рисунков и CSV доступен в разделе **Assets & Releases** релиза `taskB-2025-10-24`.
+The full set of figures and CSV files is available under **Assets & Releases** for release `taskB-2025-10-24`.
 
 ### Explainability
 SHAP summary plots hightlight top features (education, occupation, hours-per-week, age).
@@ -176,12 +177,12 @@ SHAP summary plots hightlight top features (education, occupation, hours-per-wee
 
 ## Testing
 
-Unit-тесты реализованы в папке `tests/`. Они включают:
-- smoke-тесты CLI (`test_infer.py`);
-- smoke-тесты функций инференса (`test_infer_func.py`);
-- smoke-тест препроцессора (`test_preprocessing.py`).
+Unit tests are implemented in the `tests/` directory. They include:
+- CLI smoke tests (`test_infer.py`);
+- inference function smoke tests (`test_infer_func.py`);
+- preprocessor smoke test (`test_preprocessing.py`).
 
-Запуск всех тестов:
+Run all tests:
 ```bash
 pytest -q
 ```
@@ -191,16 +192,7 @@ pytest -q
 - sensitive attributes analyzed: sex, age, education only;
 - some metric inconsistencies detected (accuracy = precision in some rows);
 - fairness post-processing may reduce overall accuracy;
-- inference script реализован как рабочий CLI (`src/models/infer.py`), поддерживает опции `--proba`, `--threshold`, `also-label`.
-
-
-## Roadmap
-- [ ] Fix metric bug in results table;
-- [ ] fill `requirements.txt` with pinned versions;
-- [x] expand `infer.py` into a full CLI tool;
-- [x] save EDA and modeling plots into `reports/figures_01/` and `reports/figures_02/`;
-- [x] add unit tests for preprocessing and inference;
-- [ ] export HTML reports of notebooks.
+- inference script is implemented as a functional CLI (`src/models/infer.py`), and supports the following options `--proba`, `--threshold`, `also-label`.
 
 
 ## Usage
@@ -214,16 +206,16 @@ Execute Jupyter notebooks in sequence:
 ### Inference (after expanding `infer.py`)
 Run predictions on new data:
 ```bash
-# Инференс из уже закодированных признаков (X_test_enc.npz) и обученной модели:
+# Inference from pre-encoded features (X_test_enc.npz) and a trained model:
 python - <<'PY'
 import numpy as np
 import scipy.sparse as sp
 from joblib import load
 from pathlib import Path
 
-# скачайте артефакты из релиза `taskB-2025-10-24` в локальный каталог, затем укажите путь: #
-model_p = Path("data/artifacts/lgb_best.joblib") # после скачивания из releases
-x_enc_p = Path("data/artifacts/X_test_enc.npz") # после скачивания из releases
+# download artifacts from release `taskB-2025-10-24` to a local directory, then specify the model path for inference:
+model_p = Path("data/artifacts/lgb_best.joblib") # after downloading from releases
+x_enc_p = Path("data/artifacts/X_test_enc.npz") # after downloading from releases
 out_p = Path("predictions.csv")
 
 X = sp.load_npz(x_enc_p)
@@ -265,7 +257,8 @@ python -m src.models.infer \
 
 ## Artifacts & Releases
 
-Локально артефакты и модели сохраняются в папках `artifacts/` и `models/`. Тяжелые файлы не коммитятся (см. `.gitignore`), но публикуются вместе с релизами на GitHub в разделе Releases:
+cally, artifacts and models are stored in `artifacts/` and `models/`.  
+Large files are not committed (see `.gitignore`) but are published with GitHub Releases:
 /releases/v1.0.0/
     - models/
         - LGBM_best.joblib
@@ -275,25 +268,26 @@ python -m src.models.infer \
         - fairness_threshold_scan.csv
     - reports_html/
     - MANIFEST.md
-При повторном запуске пайплайна (`02_modeling.ipynb`) артефакты перезаписываются локально; для воспроизводимости рекомендуется использовать версии из релизов.
+When rerunning the pipeline (`02_modeling.ipynb`), artifacts are overwritten locally.  
+For reproducibility, it is recommended to use the versions provided in the Releases.
 
-Актуальные выкладки доступны на странице Releases репозитория.  
--> **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
+The latest builds are available on the repository’s Releases page.  
+→ **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
 
-### Что есть в Releases
-- пакеты с готовыми артефактами инференса:
-    - модели: `models/*.joblib`;
-    - артефакты препроцессинга: `artifacts/*.npy` (например, `X_test_enc.npy`);
-- HTML-отчеты ноутбуков.
+### What’s included in Releases
+- Packages with ready-to-use inference artifacts:
+    - models: `models/*.joblib`;
+    - preprocessing artifacts: `artifacts/*.npy` (e.g., `X_test_enc.npy`);
+- HTML reports generated from notebooks.
 
-### Как воспроизвести локально без артефактов
-1. Подготовить окружение и данные (см. "Installation & Reproducibility").
-2. Запустить ноутбуки по порядку:
-   - `01_data_loading_and_eda.ipynb` - подготовка данных;
-   - `02_modeling.ipynb` - обучение и сохранение моделей в `models/` и артефактов в `artifacts/`;
-   - `03_fairness_and_explainability.ipynb` - генерация отчетов и графиков в `reports/`.
+### How to reproduce locally without artifacts
+1. Prepare the environment and data (see "Installation & Reproducibility").
+2. Run the notebooks in order:
+   - `01_data_loading_and_eda.ipynb` - data preparation;
+   - `02_modeling.ipynb` - training and saving models to `models/` and artifacts to `artifacts/`;
+   - `03_fairness_and_explainability.ipynb` - generating reports and plots in `reports/`.
 
-> Примечание: сырьевые файлы набора Adult (UCI) не коммитятся. Положите их в `data/raw/` или используйте шаг загрузки в `01_*` ноутбуке.
+> Note: raw Adult dataset files (UCI) are not committed. Положите их в `data/raw/` Place them in `data/raw/` or use the data download step in the `01_*` notebook.
 
 [img_pareto]: https://github.com/Vanargo/Census_Income_Classifier/releases/download/taskB-2025-10-24/Pareto_f1_vs_dp.png
 [img_f1_thr]: https://github.com/Vanargo/Census_Income_Classifier/releases/download/taskB-2025-10-24/accuracy_f1_vs_threshold.png
