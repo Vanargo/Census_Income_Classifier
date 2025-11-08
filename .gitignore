@@ -1,17 +1,28 @@
-# --- Python cache --- #
+# --- Python caches --- #
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *.pyo
 
-# --- Jupyter --- #
+# --- Tool/test caches --- #
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 **/.ipynb_checkpoints/
 
-# --- Virtual envs --- #
+# --- Virtual environments --- #
 .venv/
-env/
 venv/
+env/
 
-# --- Data: raw & intermediates --- #
+# --- IDE/OS noise --- #
+.vscode/
+.idea/
+.DS_Store/
+Thumbs.db
+
+# --- Data (raw & intermediates & processed exports) --- #
 data/raw/
 data/tmp/
 data/interim/
@@ -19,17 +30,6 @@ data/processed/*.parquet
 data/processed/*.feather
 data/processed/*.arrow
 data/processed/*_eda.csv
-
-# --- Keep empty dirs --- #
-!**/.gitkeep
-
-# --- Artifacts & models (moved to repo root; store via Releases) --- #
-artifacts/**
-models/**
-# allowlist: keep only lightweight metadata only #
-!artifacts/README.md
-!models/README.md
-!models/results_summary.csv
 
 # --- Numpy & binary blobs in data/* --- #
 data/**/*.npy
@@ -55,6 +55,15 @@ notebooks/data/**/models/
 notebooks/predictions/
 predictions/
 
+# --- Artifacts & models (store via Releases, not in Git) --- #
+artifacts/**
+models/**
+# allowlist: keep lightweight metadata only #
+!artifacts/README.md
+!models/README.md
+!models/.gitkeep
+!artifacts/.gitkeep
+
 # --- Releases: ignore heavy payloads, keed metadata --- #
 /releases/*/artifacts/
 /releases/*/models/
@@ -74,24 +83,14 @@ predictions/
 !tests/fixtures/*.joblib
 !tests/fixtures/*.pkl
 
-# --- Pytest/cache --- #
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# --- OS/editor --- #
-.DS_Store
-Thumbs.db
-.idea
-.vscode
-
-# --- Prevent reintroducing duplicated audit files at repo root --- #
-/audit_Census_Income_Classifier_*.md
+# Build/packaging #
 *.egg-info/
 *.egg
 build/
 dist/
 
+# --- Prevent reintroducing duplicated audit files at repo root --- #
+/audit_Census_Income_Classifier_*.md
 
-# keep empty dirs
+# --- Keep empty dirs wnen needed --- #
 !**/.gitkeep
