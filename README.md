@@ -1,5 +1,9 @@
 # Census Income Classifier
 
+> Project status: **competed**
+> Latest audited version: `v1.0.0` (2025-11-09)
+> Full audits and reports: see `docs/`
+
 [![CI](https://github.com/Vanargo/Census_Income_Classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Vanargo/Census_Income_Classifier/actions/workflows/ci.yml)
 [-> Changelog](./CHANGELOG.md)
 
