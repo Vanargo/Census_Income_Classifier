@@ -152,24 +152,19 @@ The project uses the `paths.py` module with absolute paths from `ROOT`:
 
 ### Fairness
 We analyze model behavior across sensitive groups (e.g., `sex`, `race`, `age_group`).  
-Below are 2–3 key plots showing how classification threshold choice affects both performance and inter-group disparity.
+Below are 2-3 key plots showing how classification threshold choice affects both performance and inter-group disparity.
 
-**Key visualizations:**
+Key visualizations (see `reports/figures_03` or Release assets):
 - **Pareto F1-DP:** trade-off between performance (F1) and demographic parity difference (DP).
-    ![Pareto F1-DP](img_pareto)
 - **Accuracy/F1 vs threshold:** how global metrics vary with threshold changes.
-    ![Accuracy/F1 vs threshold](img_f1_thr)
 - **DP vs threshold:** how the share difference of positive predictions between groups changes with the threshold.
-    ![DP vs threshold](img_dp_thr)
 
-*Additional:*
+Additional:
 - **EOD vs threshold:** Equal Opportunity Difference behavior under threshold variation.
-    ![EOD vs threshold](img_eod_thr)
 - **Calibration by group:** reliability of predicted probabilities per sensitive group (example: `sex`).
-    ![Calibration by sex](img_calib_sex)
 
 **Brief analysis.**
-1. The Pareto F1–DP plot shows that as F1 increases, the model loses demographic balance: higher accuracy comes with a greater gap in positive prediction rates between groups. This illustrates the inherent trade-off between model performance and fairness.
+1. The Pareto F1-DP plot shows that as F1 increases, the model loses demographic balance: higher accuracy comes with a greater gap in positive prediction rates between groups. This illustrates the inherent trade-off between model performance and fairness.
 2. The DP vs threshold and EOD vs threshold curves show that threshold choice strongly influences group disparity: at low thresholds (t < 0.4), the model overpredicts positives for the dominant group; at high thresholds (t > 0.6), it underpredicts for underrepresented groups. The optimal zone is around t ≈ 0.5, where both F1 and EOD remain acceptable.
 3. Together, these plots confirm that fairness correction (e.g., threshold tuning or reweighting) can substantially improve metric balance across sensitive groups without significant performance degradation.
 
@@ -276,7 +271,7 @@ When rerunning the pipeline (`02_modeling.ipynb`), artifacts are overwritten loc
 For reproducibility, it is recommended to use the versions provided in the Releases.
 
 The latest builds are available on the repository’s Releases page.  
-→ **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
+-> **Releases:** https://github.com/Vanargo/Census_Income_Classifier/releases
 
 ### What’s included in Releases
 - Packages with ready-to-use inference artifacts:
